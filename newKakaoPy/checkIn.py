@@ -1,21 +1,17 @@
-from .cryptoManager import CryptoManager
+from .Utils import cryptoUtils
 from .Utils import packetUtils
 
-import io
-import bson
-import struct
 import socket
 
 def getCheckInData(host, port):
-    crypto = CryptoManager()
-
     sock = socket.socket()
     sock.connect((host, port))
-
-    handshakePacket = crypto.getHandshakePacket()
-    sock.send(handshakePacket)
     
-    packet = packetUtils.toLocoPacket(1000, "CHECKIN", {
+    aes_key = cryptoUtils.getRandomAesKey()
+    
+    sock.send(cryptoUtils.getHandshakePacket(aes_key))
+    
+    checkInPacket = packetUtils.toLocoPacket(1000, "CHECKIN", {
         "userId": 0,
         "os": "win32",
         "ntype": 0,
@@ -24,12 +20,12 @@ def getCheckInData(host, port):
         "lang": "ko",
     })
 
-    sock.send(crypto.encryptPacket(packet))
+    sock.send(cryptoUtils.encryptPacket(checkInPacket, aes_key))
 
-    data = sock.recv(2048)
+    recv_packet = sock.recv(2048)
     
-    data = crypto.decryptPacket(data)
+    decrypted_packet = cryptoUtils.decryptPacket(recv_packet, aes_key)
     
-    result = packetUtils.readLocoPacket(data)
+    result = packetUtils.readLocoPacket(decrypted_packet)
 
     return result["Body"]

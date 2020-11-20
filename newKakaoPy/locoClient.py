@@ -1,8 +1,9 @@
 from .Utils import packetUtils
+from .Utils import cryptoUtils
 from .Packets.PingPacket import PingPacketReq
 from .Packets.LoginListPacket import LoginListPacketReq
-from .cryptoManager import CryptoManager
 
+import os
 import socket
 import asyncio
 import struct
@@ -13,12 +14,13 @@ class LocoClient():
         
         self.reader = None
         self.writer = None
-        self.crypto = None
         
         self.packet_id = 0
         self.packet_dict = {}
+        
         self.access_token = ""
         self.device_uuid = ""
+        self.aes_key = b""
         
         self.processing_buf = b""
         self.processing_size = -1
@@ -26,7 +28,7 @@ class LocoClient():
     async def sendPacket(self, packet):
         self.packet_id += 1
         
-        loco_packet = self.crypto.encryptPacket(packetUtils.toLocoPacket(self.packet_id, packet.packet_name, packet.getBody()))
+        loco_packet = cryptoUtils.encryptPacket(packetUtils.toLocoPacket(self.packet_id, packet.packet_name, packet.getBody()), self.aes_key)
         
         self.writer.write(loco_packet)
         await self.writer.drain()
@@ -54,7 +56,10 @@ class LocoClient():
                     packetSize = -1
                     
     async def processPacket(self, packet):
-        self.processing_buf += self.crypto.aesDecrypt(packet[16:], packet[:16])
+        data = packet[16:]
+        iv = packet[:16]
+        
+        self.processing_buf += cryptoUtils.aesDecrypt(data, self.aes_key, iv)
         if self.processing_size == -1 and len(self.processing_buf) >= 22:
             self.processing_size = struct.unpack("<I", self.processing_buf[18:22])[0] + 22
         if self.processing_size != -1 and len(self.processing_buf) >= self.processing_size:
@@ -108,9 +113,9 @@ class LocoClient():
         
         while True:
             self.reader, self.writer = await asyncio.open_connection(server_ip, server_port)
-            self.crypto = CryptoManager()
+            self.aes_key = os.urandom(16)
         
-            self.writer.write(self.crypto.getHandshakePacket())
+            self.writer.write(cryptoUtils.getHandshakePacket(self.aes_key))
             await self.writer.drain()
             
             loop.create_task(self.sendPacket(LoginListPacketReq(device_uuid, access_token)))

@@ -1,25 +1,26 @@
-import io
+from . import cryptoUtils
+
 import bson
 import struct
 
 def toLocoPacket(packet_id, packet_name, body):
     bson_body = bson.dumps(body)
     
-    f = io.BytesIO()
-    f.write(struct.pack("<I", packet_id))
-    f.write(struct.pack("<H", 0))
+    buf = b""
+    buf += struct.pack("<I", packet_id)
+    buf += struct.pack("<H", 0)
 
     if (11-len(packet_name)) < 0:
         raise Exception("invalid packet name length")
 
-    f.write(packet_name.encode("utf-8"))
+    buf += packet_name.encode("utf-8")
 
-    f.write(b"\x00"*(11-len(packet_name)))
-    f.write(struct.pack("<b", 0))
-    f.write(struct.pack("<i", len(bson_body)))
+    buf += b"\x00"*(11-len(packet_name))
+    buf += struct.pack("<b", 0)
+    buf += struct.pack("<i", len(bson_body))
 
-    f.write(bson_body)
-    return f.getvalue()
+    buf += bson_body
+    return buf
     
 def readLocoPacket(packet):
     return {
@@ -31,4 +32,4 @@ def readLocoPacket(packet):
         "Body":bson.loads(packet[22:]),
     }
     
-    
+
