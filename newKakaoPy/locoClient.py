@@ -1,3 +1,4 @@
+from . import message
 from .Utils import packetUtils
 from .Utils import cryptoUtils
 from .Packets.PingPacket import PingPacketReq
@@ -39,14 +40,12 @@ class LocoClient():
         return future
     
     async def recvPacket(self):
-        print("recv")
         readBuffer = b""
         packetSize = -1
 
         while True:
             recv = await self.reader.read(512)
             readBuffer += recv
-
             if packetSize == -1 and len(readBuffer) >= 4:
                 packetSize = struct.unpack("<I", readBuffer[0:4])[0] + 4
             if packetSize != -1:
@@ -77,19 +76,26 @@ class LocoClient():
             self.packet_dict[packet["PacketID"]].set_result(packet["Body"])
             del self.packet_dict[packet["PacketID"]]
             
-        if packet["PacketName"] in self.receiver:
-            for i in self.receiver[packet["PacketName"]]:
+        if packet["PacketName"] == "MSG":
+            for i in self.receiver["message"]:
+                #sendPacket를 넘기는게 올바른 생각인가..
+                loop.create_task(i["handler"](message.message(self.sendPacket, packet)))
+            
+        if packet["PacketName"] in self.receiver["packet"]:
+            for i in self.receiver["packet"][packet["PacketName"]]:
                 if i["packet_class"]:
                     loop.create_task(i["handler"](i["packet_class"](packet)))
                 else:
                     loop.create_task(i["handler"](packet))
                 
-        if "ALL" in self.receiver:
-            for i in self.receiver["ALL"]:
+        if "ALL" in self.receiver["packet"]:
+            for i in self.receiver["packet"]["ALL"]:
                 if i["packet_class"]:
                     loop.create_task(i["handler"](i["packet_class"](packet)))
                 else:
                     loop.create_task(i["handler"](packet))
+                    
+                    
                 
     async def heartbeat(self):
         #TODO 연결 해제에 관한 heartbeat 처리
@@ -112,6 +118,7 @@ class LocoClient():
         loop = asyncio.get_event_loop()
         
         while True:
+            #TODO 재연결 보강
             self.reader, self.writer = await asyncio.open_connection(server_ip, server_port)
             self.aes_key = os.urandom(16)
         

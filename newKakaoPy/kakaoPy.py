@@ -8,7 +8,7 @@ import asyncio
 
 class kakaoPy():
     def __init__(self, uid, upw, device_name, device_uuid):
-        self.receiver = {}
+        self.handlers = {"message":[], "packet":{}}
         
         self.user_id = uid
         self.user_pw = upw
@@ -17,15 +17,20 @@ class kakaoPy():
         self.locoClient = None
         
     #TODO None로 체크하는게 좋을지 receiveWithClass(?) 같은 함수를 따로 만드는게 좋을지..
-    def receive(self, packet_name, packet_class = None):
+    def packetReceive(self, packet_name, packet_class = None):
         def decorator(handler):
-            if not packet_name in self.receiver:
-                self.receiver[packet_name] = []
-            self.receiver[packet_name].append({"handler":handler, "packet_class":packet_class})
+            if not packet_name in self.handlers["packet"]:
+                self.handlers["packet"][packet_name] = []
+            self.handlers["packet"][packet_name].append({"handler":handler, "packet_class":packet_class})
+        return decorator
+        
+    def messageReceive(self):
+        def decorator(handler):
+            self.handlers["message"].append({"handler":handler})
         return decorator
         
     async def sendPacket(self, packet):
-        await self.locoClient.sendPacket(packet)
+        return await self.locoClient.sendPacket(packet)
     
     def run(self):
         bookingData = booking.getBookingData()
@@ -36,4 +41,4 @@ class kakaoPy():
         if result["status"] != 0:
             print(result["status"], result["message"])
             return
-        asyncio.get_event_loop().run_until_complete(self.locoClient.start(self.receiver, checkInData["host"], checkInData["port"], self.device_uuid, result["access_token"]))
+        asyncio.get_event_loop().run_until_complete(self.locoClient.start(self.handlers, checkInData["host"], checkInData["port"], self.device_uuid, result["access_token"]))
