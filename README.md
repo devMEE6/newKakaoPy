@@ -1,1 +1,3 @@
 # newKakaoPy
+
+BETA version
