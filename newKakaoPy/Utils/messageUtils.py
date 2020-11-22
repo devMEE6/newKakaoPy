@@ -1,9 +1,9 @@
 def getMessageData(body):
     if "attachment" in body["chatLog"]:
         if body["chatLog"]["attachment"] != "":
-            attachment = {}
-        else:
             attachment = body["chatLog"]["attachment"]
+        else:
+            attachment = {}
     else:
         attachment = {}
         
