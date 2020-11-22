@@ -8,10 +8,10 @@ async def packetReceive(packet):
     print(packet)
     
 @app.messageReceive()
-async def messageReceiver(message):
-    print(message.message)
+async def messageReceiver(chat):
+    print(chat.message)
     
-    if p.message == ".TEST":
-        await message.sendChat(TextChat("HELLO"))
+    if chat.message == ".TEST":
+        await chat.sendChat(TextChat("HELLO"))
          
 app.run()
