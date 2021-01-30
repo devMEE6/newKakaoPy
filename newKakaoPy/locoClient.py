@@ -1,13 +1,13 @@
-from . import message
-from .Utils import packetUtils
-from .Utils import cryptoUtils
-from .Packets.PingPacket import PingPacketReq
-from .Packets.LoginListPacket import LoginListPacketReq
-
-import os
-import socket
 import asyncio
+import os
 import struct
+
+from . import message
+from .Packets.LoginListPacket import LoginListPacketReq
+from .Packets.PingPacket import PingPacketReq
+from .Utils import cryptoUtils
+from .Utils import packetUtils
+
 
 class LocoClient():
     def __init__(self):

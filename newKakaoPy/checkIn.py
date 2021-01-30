@@ -1,7 +1,9 @@
+import socket
+
+from .Config import Agent, NetType, Version, MCCMNC, Lang
 from .Utils import cryptoUtils
 from .Utils import packetUtils
 
-import socket
 
 def getCheckInData(host, port):
     sock = socket.socket()
@@ -13,11 +15,11 @@ def getCheckInData(host, port):
     
     checkInPacket = packetUtils.toLocoPacket(1000, "CHECKIN", {
         "userId": 0,
-        "os": "win32",
-        "ntype": 0,
-        "appVer": "3.14",
-        "MCCMNC": "999",
-        "lang": "ko",
+        "os": Agent,
+        "ntype": NetType,
+        "appVer": Version,
+        "MCCMNC": MCCMNC,
+        "lang": Lang,
     })
 
     sock.send(cryptoUtils.encryptPacket(checkInPacket, aes_key))

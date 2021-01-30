@@ -2,7 +2,7 @@ from .BasePacket import PacketReq, PacketRes
 
 class LoginListPacketReq(PacketReq):
     def __init__(self, duuid, oauthToken, packet_name, body):
-        super().__init__(packet_name, body)
+        super().__init__("LOGINLIST", body)
         self.packet_name = "LOGINLIST"
         
         self.body = {

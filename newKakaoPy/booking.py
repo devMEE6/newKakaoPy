@@ -1,7 +1,9 @@
-from .Utils import packetUtils
-from .Config import BookingURL, BookingPort
 import socket
 import ssl
+
+from .Config import BookingURL, BookingPort
+from .Utils import packetUtils
+
 
 def getBookingData():
     context = ssl.create_default_context()

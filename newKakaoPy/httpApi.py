@@ -1,7 +1,7 @@
-from .Utils import loginUtils
-from .Config import *
-
 import requests
+
+from .Config import *
+from .Utils import loginUtils
 
 
 def RequestPasscode(email, password, device_name, device_uuid):

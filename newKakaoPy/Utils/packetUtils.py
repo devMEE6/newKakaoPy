@@ -1,5 +1,6 @@
-import bson
 import struct
+import bson
+
 
 def toLocoPacket(packet_id, packet_name, body):
     bson_body = bson.dumps(body)

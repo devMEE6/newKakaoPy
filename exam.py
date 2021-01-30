@@ -1,5 +1,5 @@
-from newKakaoPy.kakaoPy import kakaoPy
 from newKakaoPy.Chats.TextChat import TextChat
+from newKakaoPy.kakaoPy import kakaoPy
 
 app = kakaoPy("uid", "upw", "dname", "duuid")
 

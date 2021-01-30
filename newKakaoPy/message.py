@@ -1,5 +1,6 @@
-from .Utils import messageUtils
 from .Packets.WritePacket import WritePacketReq
+from .Utils import messageUtils
+
 
 class message():
     def __init__(self, sendPacket, packet):
