@@ -1,19 +1,17 @@
 from .Utils import packetUtils
-
+from .Config import BookingURL, BookingPort
 import socket
 import ssl
-import bson
 
 def getBookingData():
-    hostname = 'booking-loco.kakao.com'
     context = ssl.create_default_context()
 
-    with socket.create_connection((hostname, 443)) as sock:
-        with context.wrap_socket(sock, server_hostname=hostname) as ssock:
+    with socket.create_connection((BookingURL, BookingPort)) as Socket1:
+        with context.wrap_socket(Socket1, server_hostname=BookingURL) as Socket2:
             packet = packetUtils.toLocoPacket(1000, "GETCONF", {'os': "win32", "model": "", "MCCMNC": ""})
-            ssock.write(packet)
+            Socket2.write(packet)
 
-            data = ssock.recv(4096)
+            data = Socket2.recv(4096)
 
             result = packetUtils.readLocoPacket(data)
             return result["Body"]

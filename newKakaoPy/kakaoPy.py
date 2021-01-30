@@ -19,7 +19,7 @@ class kakaoPy():
     #TODO None로 체크하는게 좋을지 receiveWithClass(?) 같은 함수를 따로 만드는게 좋을지..
     def packetReceive(self, packet_name, packet_class = None):
         def decorator(handler):
-            if not packet_name in self.handlers["packet"]:
+            if packet_name not in self.handlers["packet"]:
                 self.handlers["packet"][packet_name] = []
             self.handlers["packet"][packet_name].append({"handler":handler, "packet_class":packet_class})
         return decorator

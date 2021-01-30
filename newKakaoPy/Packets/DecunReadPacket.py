@@ -2,6 +2,7 @@ from .BasePacket import PacketRes
         
 class PacketDecunReadRes(PacketRes):
     def __init__(self, packet):
+        super().__init__(packet)
         self.packet_name = "DECUNREAD"
         
         self.status = packet["Body"]["status"]

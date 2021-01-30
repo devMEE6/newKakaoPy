@@ -1,7 +1,8 @@
 from .BasePacket import PacketReq, PacketRes
 
 class WritePacketReq(PacketReq):
-    def __init__(self, chatId, extra, type, msgId, msg, noSeen = False):
+    def __init__(self, chatId, extra, type, msgId, msg, packet_name, body, noSeen=False):
+        super().__init__(packet_name, body)
         self.packet_name = "WRITE"
         
         self.body = {
@@ -15,6 +16,7 @@ class WritePacketReq(PacketReq):
         
 class WritePacketRes(PacketRes):
     def __init__(self, packet):
+        super().__init__(packet)
         self.packet_name = "WRITE"
         
         self.chatId = packet["Body"]["chatId"]

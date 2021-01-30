@@ -1,6 +1,6 @@
 import io
 
-class PacketReq():
+class PacketReq:
     def __init__(self, packet_name, body):
         self.packet_name = packet_name
         self.body = body
@@ -11,7 +11,7 @@ class PacketReq():
     def getBody(self):
         return self.body
         
-class PacketRes():
+class PacketRes:
     def __init__(self, packet):
         self.packet_name = packet["PacketName"]
         self.body = packet["Body"]
