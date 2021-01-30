@@ -1,7 +1,7 @@
 from .BasePacket import PacketReq, PacketRes
 
 class WritePacketReq(PacketReq):
-    def __init__(self, chatId, extra, type, msgId, msg, packet_name, body, noSeen=False):
+    def __init__(self, chatId, extra, type, msgId, msg, body, noSeen=False):
         super().__init__("WRITE", body)
         self.packet_name = "WRITE"
         
