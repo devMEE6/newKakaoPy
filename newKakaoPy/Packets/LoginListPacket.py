@@ -25,4 +25,5 @@ class LoginListPacketReq(PacketReq):
         
 class LoginListPacketRes(PacketRes):
     def __init__(self, packet):
+        super().__init__(packet)
         self.packet_name = "LOGINLIST"
