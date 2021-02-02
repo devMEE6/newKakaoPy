@@ -1,14 +1,14 @@
 from .BasePacket import PacketReq, PacketRes
 
 class PacketGetconfReq(PacketReq):
-    def __init__(self, os, model, MCCMNC, body):
-        super().__init__("GETCONF", body)
+    def __init__(self, os, model, MCCMNC):
         self.packet_name = "GETCONF"
         self.body = {
             "os":os,
             "model":model,
             "MCCMNC":MCCMNC
         }
+        super().__init__(self.packet_name, self.body)
         
 class PacketGetconfRes(PacketRes):
     def __init__(self, packet):

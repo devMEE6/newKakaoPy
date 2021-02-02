@@ -1,8 +1,7 @@
 from .BasePacket import PacketReq, PacketRes
 
 class LoginListPacketReq(PacketReq):
-    def __init__(self, duuid, oauthToken, body):
-        super().__init__("LOGINLIST", body)
+    def __init__(self, duuid, oauthToken):
         self.packet_name = "LOGINLIST"
         
         self.body = {
@@ -22,6 +21,7 @@ class LoginListPacketReq(PacketReq):
             "lbk": 0,
             "bg": False,
         }
+        super().__init__(self.packet_name, self.body)
         
 class LoginListPacketRes(PacketRes):
     def __init__(self, packet):
